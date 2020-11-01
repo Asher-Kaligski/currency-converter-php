@@ -18,7 +18,9 @@ jQuery(document).ready(function ($) {
     let countriesArr = chosenCurrencies.split(',');
     countriesArr.forEach((country) => {
       $(chosenCountriesSelector).append(
-        '<li class="list-group-item">' + country + '</li>'
+        '<li class="list-group-item">' +
+          country +
+          '<i class="fa fa-2x fa-trash float-right" aria-hidden="true"></i></li>'
       );
     });
   }
@@ -69,7 +71,9 @@ jQuery(document).ready(function ($) {
         localStorage.setItem(CHOSEN_CURRENCIES, selectedCountryToAdd);
 
         $(chosenCountriesSelector).append(
-          '<li class="list-group-item">' + selectedCountryToAdd + '</li>'
+          '<li class="list-group-item">' +
+            selectedCountryToAdd +
+            '<i class="fa fa-2x fa-trash float-right" aria-hidden="true"></i></li>'
         );
       } else if (
         chosenCurrencies &&
@@ -83,12 +87,40 @@ jQuery(document).ready(function ($) {
         localStorage.setItem(CHOSEN_CURRENCIES, chosenCurrencies);
 
         $(chosenCountriesSelector).append(
-          '<li class="list-group-item">' + selectedCountryToAdd + '</li>'
+          '<li class="list-group-item">' +
+            selectedCountryToAdd +
+            '<i class="fa fa-2x fa-trash float-right" aria-hidden="true"></i></li>'
         );
       } else {
         return alert('The currency already added');
       }
     });
+
+  $(document).on('click', '.fa-trash', function (e) {
+    const currency = e.currentTarget.offsetParent.innerText;
+
+    $('li:contains(' + currency + ')').remove();
+
+    let chosenCurrencies = localStorage.getItem(CHOSEN_CURRENCIES);
+
+    if (!chosenCurrencies.includes(','))
+      localStorage.removeItem(CHOSEN_CURRENCIES);
+    else {
+      const currenciesArr = chosenCurrencies.split(',');
+
+      const index = currenciesArr.findIndex((c) => c === currency);
+
+      if (index !== -1) currenciesArr.splice(index, 1);
+
+      let currencies = '';
+      currenciesArr.forEach((c, index) => {
+        if (index === currenciesArr.length - 1) currencies += c;
+        else currencies += c + ',';
+      });
+
+      localStorage.setItem(CHOSEN_CURRENCIES, currencies);
+    }
+  });
 
   document
     .querySelector('.show-change')
